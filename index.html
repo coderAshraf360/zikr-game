@@ -3,38 +3,1411 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Zikr Game — ذكر</title>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
+<title>Zikr — ذكر</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel+Decorative:wght@400;700&family=Raleway:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  :root {
-    --gold: #C9A84C;
-    --gold-light: #F0D07A;
-    --gold-dim: #8A6A2A;
-    --deep: #0A0E1A;
-    --mid: #111827;
-    --surface: #1A2235;
-    --text: #EDE0C4;
-    --glow: rgba(201,168,76,0.35);
+:root {
+  --gold: #C9A84C;
+  --gold-light: #F0D07A;
+  --gold-dim: #8A6A2A;
+  --gold-glow: rgba(201,168,76,0.4);
+  --deep: #080C18;
+  --mid: #0F1626;
+  --surface: #162030;
+  --surface2: #1E2D45;
+  --text: #EDE0C4;
+  --text-dim: rgba(237,224,196,0.45);
+  --accent: #4A90D9;
+  --accent-glow: rgba(74,144,217,0.3);
+  --green: #2ECC71;
+  --red: #E74C3C;
+  --radius: 20px;
+  --transition: 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+
+[data-theme="light"] {
+  --deep: #F5EDD8;
+  --mid: #EDE0C4;
+  --surface: #E8D5A8;
+  --surface2: #DFC898;
+  --text: #2C1810;
+  --text-dim: rgba(44,24,16,0.5);
+  --gold: #8A5A00;
+  --gold-light: #6B4400;
+  --gold-dim: #B8860B;
+  --gold-glow: rgba(138,90,0,0.3);
+}
+
+body {
+  background: var(--deep);
+  color: var(--text);
+  font-family: 'Raleway', sans-serif;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  transition: background var(--transition), color var(--transition);
+}
+
+/* ─── Background ─── */
+.bg-layer {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+}
+.bg-stars {
+  background:
+    radial-gradient(1px 1px at 15% 20%, rgba(255,255,255,0.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 85% 8%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 55% 85%, rgba(255,255,200,0.8) 0%, transparent 100%),
+    radial-gradient(1px 1px at 8% 65%, rgba(255,255,255,0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 92% 45%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 30% 12%, rgba(255,255,255,0.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 70% 40%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(2px 2px at 78% 78%, rgba(255,255,220,0.8) 0%, transparent 100%),
+    radial-gradient(1px 1px at 3% 92%, rgba(255,255,255,0.6) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 42% 52%, rgba(255,255,200,0.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 60% 25%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 22% 70%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 95% 15%, rgba(255,255,255,0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 50% 5%, rgba(255,255,255,0.5) 0%, transparent 100%);
+  animation: twinkle 4s ease-in-out infinite alternate;
+}
+@keyframes twinkle {
+  0% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+[data-theme="light"] .bg-stars { display: none; }
+
+.bg-gradient {
+  background: radial-gradient(ellipse at 50% 0%, rgba(201,168,76,0.08) 0%, transparent 60%),
+              radial-gradient(ellipse at 0% 100%, rgba(74,144,217,0.05) 0%, transparent 50%);
+  animation: gradient-shift 8s ease-in-out infinite alternate;
+}
+@keyframes gradient-shift {
+  0% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+.bg-pattern {
+  opacity: 0.025;
+  background-image:
+    repeating-linear-gradient(60deg, var(--gold) 0, var(--gold) 1px, transparent 0, transparent 40px),
+    repeating-linear-gradient(-60deg, var(--gold) 0, var(--gold) 1px, transparent 0, transparent 40px),
+    repeating-linear-gradient(0deg, var(--gold) 0, var(--gold) 1px, transparent 0, transparent 40px);
+}
+
+/* ─── Main Layout ─── */
+.container {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; align-items: center;
+  width: 100%; max-width: 500px;
+  padding: 16px 16px 32px;
+  min-height: 100dvh;
+}
+
+/* ─── Top Bar ─── */
+.top-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.top-bar-left, .top-bar-right {
+  display: flex; gap: 8px; align-items: center;
+}
+
+.icon-btn {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid rgba(201,168,76,0.2);
+  color: var(--gold);
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all var(--transition);
+}
+.icon-btn:hover, .icon-btn:active {
+  background: var(--gold-dim);
+  border-color: var(--gold);
+  transform: scale(0.95);
+  box-shadow: 0 0 10px var(--gold-glow);
+}
+
+.header {
+  text-align: center;
+  flex: 1;
+}
+.header h1 {
+  font-family: 'Cinzel Decorative', cursive;
+  font-size: clamp(0.95rem, 3.5vw, 1.3rem);
+  color: var(--gold-light);
+  letter-spacing: 0.12em;
+  text-shadow: 0 0 20px var(--gold-glow);
+}
+.header .arabic-sub {
+  font-family: 'Amiri', serif;
+  font-size: 1.4rem;
+  color: var(--gold);
+  display: block;
+  text-shadow: 0 0 12px var(--gold-glow);
+  line-height: 1.1;
+}
+
+/* ─── Streak Bar ─── */
+.streak-bar {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface);
+  border: 1px solid rgba(201,168,76,0.15);
+  border-radius: 50px;
+  padding: 7px 18px;
+  width: 100%;
+  margin-bottom: 12px;
+  animation: fadeUp 0.6s ease 0.1s both;
+}
+.streak-icon { font-size: 1.1rem; }
+.streak-info { flex: 1; }
+.streak-label { font-size: 0.6rem; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; }
+.streak-val {
+  font-family: 'Cinzel Decorative', cursive;
+  font-size: 0.85rem;
+  color: var(--gold-light);
+}
+.streak-dots { display: flex; gap: 4px; }
+.streak-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--surface2);
+  border: 1px solid var(--gold-dim);
+  transition: all 0.3s;
+}
+.streak-dot.lit {
+  background: var(--gold);
+  box-shadow: 0 0 6px var(--gold-glow);
+}
+
+/* ─── Zikr Tabs ─── */
+.zikr-tabs {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 12px;
+  animation: fadeUp 0.6s ease 0.15s both;
+}
+.zikr-tab {
+  background: var(--surface);
+  border: 1px solid rgba(201,168,76,0.2);
+  color: var(--text-dim);
+  padding: 5px 13px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-family: 'Raleway', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  transition: all var(--transition);
+}
+.zikr-tab:hover { color: var(--text); border-color: var(--gold-dim); }
+.zikr-tab.active {
+  background: linear-gradient(135deg, var(--gold-dim), rgba(138,106,42,0.6));
+  border-color: var(--gold);
+  color: var(--gold-light);
+  box-shadow: 0 0 12px var(--gold-glow);
+}
+
+/* ─── Zikr Display ─── */
+.zikr-display {
+  text-align: center;
+  margin-bottom: 8px;
+  min-height: 80px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  animation: fadeUp 0.6s ease 0.2s both;
+  position: relative;
+}
+.zikr-arabic {
+  font-family: 'Amiri', serif;
+  font-size: clamp(1.5rem, 6.5vw, 2.4rem);
+  color: var(--gold-light);
+  text-shadow: 0 0 25px var(--gold-glow);
+  line-height: 1.4;
+  direction: rtl;
+  transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.zikr-transliteration {
+  font-size: 0.8rem;
+  color: var(--gold-dim);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin-top: 2px;
+}
+.zikr-translation {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+  font-style: italic;
+}
+.zikr-display.switching .zikr-arabic {
+  opacity: 0; transform: translateY(-10px) scale(0.95);
+}
+
+/* ─── Target Row ─── */
+.target-row {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 8px;
+  animation: fadeUp 0.6s ease 0.25s both;
+}
+.target-label {
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.target-btns { display: flex; gap: 5px; }
+.target-btn {
+  background: var(--surface);
+  border: 1px solid rgba(201,168,76,0.2);
+  color: var(--text-dim);
+  width: 38px; height: 30px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.72rem;
+  font-family: 'Raleway', sans-serif;
+  font-weight: 600;
+  transition: all var(--transition);
+}
+.target-btn:hover { color: var(--text); border-color: var(--gold-dim); }
+.target-btn.active-target {
+  background: var(--gold-dim);
+  border-color: var(--gold);
+  color: var(--gold-light);
+  box-shadow: 0 0 8px var(--gold-glow);
+}
+
+/* ─── ORB ─── */
+.orb-wrapper {
+  position: relative;
+  width: 300px; height: 300px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 4px 0 12px;
+  animation: fadeUp 0.6s ease 0.3s both;
+}
+
+.orb-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid var(--gold);
+  pointer-events: none;
+  opacity: 0;
+}
+.orb-ring-1 { width: 220px; height: 220px; animation: ring-pulse 3s ease-out infinite 0s; }
+.orb-ring-2 { width: 262px; height: 262px; animation: ring-pulse 3s ease-out infinite 1s; }
+.orb-ring-3 { width: 298px; height: 298px; animation: ring-pulse 3s ease-out infinite 2s; }
+@keyframes ring-pulse {
+  0% { opacity: 0.5; transform: scale(0.82); }
+  100% { opacity: 0; transform: scale(1.05); }
+}
+
+.progress-svg {
+  position: absolute;
+  width: 220px; height: 220px;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%) rotate(-90deg);
+  pointer-events: none; z-index: 3;
+}
+.progress-track { fill: none; stroke: rgba(201,168,76,0.1); stroke-width: 4; }
+.progress-fill {
+  fill: none; stroke: url(#progressGrad); stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 659;
+  stroke-dashoffset: 659;
+  transition: stroke-dashoffset 0.35s cubic-bezier(0.4,0,0.2,1);
+  filter: drop-shadow(0 0 5px var(--gold));
+}
+
+.orb {
+  width: 185px; height: 185px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%,
+    rgba(201,168,76,0.25) 0%,
+    rgba(15,22,38,0.95) 55%,
+    var(--deep) 100%);
+  border: 2px solid var(--gold);
+  box-shadow:
+    0 0 40px var(--gold-glow),
+    0 0 80px rgba(201,168,76,0.1),
+    inset 0 0 40px rgba(0,0,0,0.4),
+    inset 0 2px 4px rgba(201,168,76,0.15);
+  cursor: pointer;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  position: relative; z-index: 2;
+  transition: transform 0.12s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.12s;
+  touch-action: manipulation;
+}
+.orb::before {
+  content: '';
+  position: absolute;
+  top: 12%; left: 20%; width: 35%; height: 22%;
+  background: radial-gradient(ellipse, rgba(255,255,255,0.12) 0%, transparent 100%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.orb.tapped {
+  transform: scale(0.9);
+  box-shadow:
+    0 0 60px rgba(201,168,76,0.8),
+    0 0 120px rgba(201,168,76,0.3),
+    inset 0 0 50px rgba(201,168,76,0.2);
+}
+.orb.flash {
+  animation: orb-flash 0.4s ease;
+}
+@keyframes orb-flash {
+  0% { box-shadow: 0 0 40px var(--gold-glow), inset 0 0 40px rgba(0,0,0,0.4); }
+  50% { box-shadow: 0 0 80px rgba(201,168,76,0.9), 0 0 140px rgba(201,168,76,0.4); }
+  100% { box-shadow: 0 0 40px var(--gold-glow), inset 0 0 40px rgba(0,0,0,0.4); }
+}
+
+.orb-count {
+  font-family: 'Cinzel Decorative', cursive;
+  font-size: 3.4rem;
+  color: var(--gold-light);
+  line-height: 1;
+  text-shadow: 0 0 20px var(--gold-glow);
+  transition: transform 0.15s cubic-bezier(0.34,1.56,0.64,1);
+}
+.orb-count.bump { animation: count-bump 0.25s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes count-bump {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+.orb-label {
+  font-size: 0.62rem;
+  color: var(--text-dim);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-top: 5px;
+  font-weight: 600;
+}
+
+/* ─── Stats ─── */
+.stats-row {
+  display: flex; gap: 10px;
+  width: 100%;
+  margin-bottom: 10px;
+  animation: fadeUp 0.6s ease 0.35s both;
+}
+.stat-box {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid rgba(201,168,76,0.15);
+  border-radius: 14px;
+  padding: 10px 8px;
+  text-align: center;
+  transition: all var(--transition);
+}
+.stat-box:hover {
+  border-color: var(--gold-dim);
+  box-shadow: 0 0 10px rgba(201,168,76,0.1);
+}
+.stat-value {
+  font-family: 'Cinzel Decorative', cursive;
+  font-size: 1.25rem;
+  color: var(--gold-light);
+  line-height: 1;
+}
+.stat-label {
+  font-size: 0.57rem;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 3px;
+  font-weight: 600;
+}
+
+/* ─── Milestone Toast ─── */
+.milestone-toast {
+  position: fixed;
+  top: 20px; left: 50%;
+  transform: translateX(-50%) translateY(-80px);
+  background: linear-gradient(135deg, var(--surface), var(--surface2));
+  border: 1px solid var(--gold);
+  border-radius: 50px;
+  padding: 10px 24px;
+  font-family: 'Amiri', serif;
+  font-size: 1.05rem;
+  color: var(--gold-light);
+  z-index: 500;
+  pointer-events: none;
+  transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1), opacity 0.5s;
+  opacity: 0;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 20px var(--gold-glow);
+  white-space: nowrap;
+}
+.milestone-toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* ─── Controls ─── */
+.controls {
+  display: flex; gap: 8px;
+  animation: fadeUp 0.6s ease 0.4s both;
+  width: 100%;
+}
+.ctrl-btn {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid rgba(201,168,76,0.2);
+  color: var(--text-dim);
+  padding: 11px 0;
+  border-radius: 50px;
+  cursor: pointer;
+  font-family: 'Raleway', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  transition: all var(--transition);
+}
+.ctrl-btn:hover { color: var(--text); border-color: var(--gold-dim); background: var(--surface2); }
+.ctrl-btn.primary {
+  background: linear-gradient(135deg, var(--gold-dim), rgba(138,106,42,0.5));
+  border-color: var(--gold);
+  color: var(--gold-light);
+}
+.ctrl-btn.primary:hover { box-shadow: 0 0 15px var(--gold-glow); }
+.ctrl-btn.danger:hover { background: rgba(231,76,60,0.15); border-color: var(--red); color: #ff8080; }
+
+/* ─── History Panel ─── */
+.panel-backdrop {
+  position: fixed; inset: 0; z-index: 300;
+  background: rgba(8,12,24,0.85);
+  backdrop-filter: blur(6px);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s;
+}
+.panel-backdrop.show { opacity: 1; pointer-events: all; }
+
+.history-panel {
+  position: fixed;
+  bottom: 0; left: 50%; transform: translateX(-50%) translateY(100%);
+  width: 100%; max-width: 500px;
+  background: var(--mid);
+  border: 1px solid rgba(201,168,76,0.2);
+  border-radius: 24px 24px 0 0;
+  padding: 20px 20px 32px;
+  z-index: 400;
+  transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+  max-height: 70dvh;
+  overflow-y: auto;
+}
+.history-panel.show { transform: translateX(-50%) translateY(0); }
+
+.panel-handle {
+  width: 40px; height: 4px;
+  background: var(--gold-dim);
+  border-radius: 2px;
+  margin: 0 auto 16px;
+}
+.panel-title {
+  font-family: 'Cinzel Decorative', cursive;
+  font-size: 1rem;
+  color: var(--gold-light);
+  margin-bottom: 14px;
+  text-align: center;
+}
+.history-list { display: flex; flex-direction: column; gap: 8px; }
+.history-item {
+  background: var(--surface);
+  border: 1px solid rgba(201,168,76,0.12);
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.history-item-left .hi-zikr {
+  font-family: 'Amiri', serif;
+  font-size: 0.9rem;
+  color: var(--gold);
+}
+.history-item-left .hi-time {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+.history-item-right {
+  text-align: right;
+}
+.hi-count {
+  font-family: 'Cinzel Decorative', cursive;
+  font-size: 1rem;
+  color: var(--gold-light);
+}
+.hi-rounds {
+  font-size: 0.6rem;
+  color: var(--text-dim);
+}
+.history-empty {
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  padding: 20px;
+  font-style: italic;
+}
+
+/* ─── Completion Overlay ─── */
+.complete-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(8,12,24,0.97);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 14px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.5s;
+  padding: 30px;
+}
+.complete-overlay.show { opacity: 1; pointer-events: all; }
+
+.complete-mandala {
+  font-size: 3.5rem;
+  animation: spin-glow 2s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 20px var(--gold));
+}
+@keyframes spin-glow {
+  0% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 15px var(--gold)); }
+  100% { transform: scale(1.08) rotate(15deg); filter: drop-shadow(0 0 35px var(--gold-light)); }
+}
+.complete-title {
+  font-family: 'Cinzel Decorative', cursive;
+  font-size: 1.8rem;
+  color: var(--gold-light);
+  text-shadow: 0 0 30px var(--gold-glow);
+}
+.complete-arabic {
+  font-family: 'Amiri', serif;
+  font-size: 2.2rem;
+  color: var(--gold);
+  direction: rtl;
+  text-shadow: 0 0 20px var(--gold-glow);
+}
+.complete-stats {
+  background: var(--surface);
+  border: 1px solid rgba(201,168,76,0.2);
+  border-radius: 16px;
+  padding: 16px 30px;
+  text-align: center;
+}
+.complete-stat-val {
+  font-family: 'Cinzel Decorative', cursive;
+  font-size: 2rem;
+  color: var(--gold-light);
+}
+.complete-stat-lbl {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.complete-sub {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  text-align: center;
+  line-height: 1.5;
+}
+.complete-btns { display: flex; gap: 10px; }
+
+/* ─── Particles ─── */
+.particle {
+  position: fixed;
+  pointer-events: none;
+  font-family: 'Amiri', serif;
+  z-index: 100;
+  animation: float-up 1.2s ease forwards;
+}
+@keyframes float-up {
+  0% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+  100% { opacity: 0; transform: translateY(-100px) scale(0.4) rotate(30deg); }
+}
+
+/* ─── Confetti ─── */
+.confetti-piece {
+  position: fixed;
+  pointer-events: none;
+  z-index: 150;
+  border-radius: 2px;
+  animation: confetti-fall linear forwards;
+}
+@keyframes confetti-fall {
+  0% { opacity: 1; transform: translateY(-20px) rotate(0deg); }
+  100% { opacity: 0; transform: translateY(100vh) rotate(720deg); }
+}
+
+/* ─── Volume Indicator ─── */
+.volume-indicator {
+  display: flex; gap: 3px; align-items: center;
+}
+.vol-bar {
+  width: 3px; border-radius: 2px;
+  background: var(--gold-dim);
+  transition: background 0.2s, height 0.2s;
+}
+.vol-bar:nth-child(1) { height: 6px; }
+.vol-bar:nth-child(2) { height: 10px; }
+.vol-bar:nth-child(3) { height: 14px; }
+.vol-bar:nth-child(4) { height: 10px; }
+.vol-bar:nth-child(5) { height: 6px; }
+.icon-btn.muted .vol-bar { background: var(--surface2); }
+.icon-btn.muted:not(:hover) { opacity: 0.5; }
+
+/* ─── Speed indicator ─── */
+.speed-badge {
+  position: absolute;
+  top: -5px; right: -5px;
+  background: var(--gold);
+  color: var(--deep);
+  font-size: 0.55rem;
+  font-weight: 700;
+  padding: 2px 5px;
+  border-radius: 50px;
+  letter-spacing: 0.05em;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.speed-badge.show { opacity: 1; }
+
+/* ─── Animations ─── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-5px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--mid); }
+::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+
+/* ─── Accessibility focus ─── */
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<div class="bg-layer bg-stars"></div>
+<div class="bg-layer bg-gradient"></div>
+<div class="bg-layer bg-pattern"></div>
+
+<div class="milestone-toast" id="milestoneToast"></div>
+
+<div class="container">
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle light/dark mode">🌙</button>
+      <button class="icon-btn" id="soundBtn" onclick="toggleSound()" title="Toggle sound" aria-label="Toggle sound">
+        <div class="volume-indicator">
+          <div class="vol-bar"></div>
+          <div class="vol-bar"></div>
+          <div class="vol-bar"></div>
+          <div class="vol-bar"></div>
+          <div class="vol-bar"></div>
+        </div>
+      </button>
+    </div>
+    <div class="header">
+      <h1>ZIKR</h1>
+      <span class="arabic-sub">ذِكْر</span>
+    </div>
+    <div class="top-bar-right">
+      <button class="icon-btn" onclick="openHistory()" title="Session history" aria-label="View session history">📜</button>
+      <button class="icon-btn" id="hapticBtn" onclick="toggleHaptic()" title="Toggle haptic" aria-label="Toggle haptic feedback">📳</button>
+    </div>
+  </div>
+
+  <!-- Streak -->
+  <div class="streak-bar">
+    <div class="streak-icon">🔥</div>
+    <div class="streak-info">
+      <div class="streak-label">Session Streak</div>
+      <div class="streak-val" id="streakVal">0 in a row</div>
+    </div>
+    <div class="streak-dots" id="streakDots">
+      <div class="streak-dot"></div>
+      <div class="streak-dot"></div>
+      <div class="streak-dot"></div>
+      <div class="streak-dot"></div>
+      <div class="streak-dot"></div>
+    </div>
+  </div>
+
+  <!-- Zikr Tabs -->
+  <div class="zikr-tabs" id="zikrTabs" role="tablist" aria-label="Choose a Zikr"></div>
+
+  <!-- Zikr Display -->
+  <div class="zikr-display" id="zikrDisplay">
+    <div class="zikr-arabic" id="zikrArabic"></div>
+    <div class="zikr-transliteration" id="zikrTranslit"></div>
+    <div class="zikr-translation" id="zikrTranslation"></div>
+  </div>
+
+  <!-- Target -->
+  <div class="target-row">
+    <span class="target-label">Target</span>
+    <div class="target-btns">
+      <button class="target-btn active-target" onclick="setTarget(33,this)">33</button>
+      <button class="target-btn" onclick="setTarget(99,this)">99</button>
+      <button class="target-btn" onclick="setTarget(100,this)">100</button>
+      <button class="target-btn" onclick="setTarget(Infinity,this)">∞</button>
+    </div>
+  </div>
+
+  <!-- Orb -->
+  <div class="orb-wrapper">
+    <div class="orb-ring orb-ring-1"></div>
+    <div class="orb-ring orb-ring-2"></div>
+    <div class="orb-ring orb-ring-3"></div>
+    <svg class="progress-svg" viewBox="0 0 220 220" aria-hidden="true">
+      <defs>
+        <linearGradient id="progressGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#F0D07A"/>
+          <stop offset="100%" stop-color="#C9A84C"/>
+        </linearGradient>
+      </defs>
+      <circle class="progress-track" cx="110" cy="110" r="105"/>
+      <circle class="progress-fill" id="progressArc" cx="110" cy="110" r="105"/>
+    </svg>
+    <div class="orb" id="orbBtn" role="button" aria-label="Tap to count Zikr" tabindex="0">
+      <div class="speed-badge" id="speedBadge">FAST!</div>
+      <div class="orb-count" id="countDisplay">0</div>
+      <div class="orb-label">TAP</div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-box">
+      <div class="stat-value" id="totalDisplay">0</div>
+      <div class="stat-label">Total</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value" id="roundDisplay">1</div>
+      <div class="stat-label">Round</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value" id="targetDisplay">33</div>
+      <div class="stat-label">Target</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value" id="tpmDisplay">0</div>
+      <div class="stat-label">/ min</div>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <button class="ctrl-btn primary" onclick="nextZikr()">Next Zikr ›</button>
+    <button class="ctrl-btn" onclick="undoTap()">Undo</button>
+    <button class="ctrl-btn danger" onclick="resetAll()">Reset</button>
+  </div>
+
+</div>
+
+<!-- History Panel -->
+<div class="panel-backdrop" id="backdrop" onclick="closeHistory()"></div>
+<div class="history-panel" id="historyPanel" role="dialog" aria-label="Session history">
+  <div class="panel-handle"></div>
+  <div class="panel-title">Session History</div>
+  <div class="history-list" id="historyList"></div>
+</div>
+
+<!-- Complete Overlay -->
+<div class="complete-overlay" id="completeOverlay" role="dialog" aria-live="polite">
+  <div class="complete-mandala">✦</div>
+  <div class="complete-title">MashaAllah!</div>
+  <div class="complete-arabic">ما شاء الله</div>
+  <div class="complete-stats">
+    <div class="complete-stat-val" id="completeCount"></div>
+    <div class="complete-stat-lbl">Dhikr completed in round</div>
+    <div class="complete-stat-val" id="completeRound" style="margin-top:8px;font-size:1.3rem;"></div>
+    <div class="complete-stat-lbl">rounds total</div>
+  </div>
+  <div class="complete-sub" id="completeSub"></div>
+  <div class="complete-btns">
+    <button class="ctrl-btn primary" onclick="continueZikr()">Continue ›</button>
+    <button class="ctrl-btn" onclick="resetAll()">New Session</button>
+  </div>
+</div>
+
+<script>
+/* ─────────── DATA ─────────── */
+const ZIKRS = [
+  {
+    tab: 'Astaghfirullah',
+    arabic: 'أَسْتَغْفِرُ اللّٰه',
+    translit: 'Astaghfirullah',
+    translation: 'I seek forgiveness from Allah',
+    particle: ['🤲','✨','🌿'],
+    color: '#4A90D9'
+  },
+  {
+    tab: 'Salawat',
+    arabic: 'صَلَّى اللّٰهُ عَلَيْهِ وَسَلَّمَ',
+    translit: 'Ṣallallāhu ʿAlayhi wa Sallam',
+    translation: 'Peace & blessings upon the Prophet ﷺ',
+    particle: ['☪','💫','✦'],
+    color: '#8A5FC4'
+  },
+  {
+    tab: 'Allahu Akbar',
+    arabic: 'اللّٰهُ أَكْبَر',
+    translit: 'Allāhu Akbar',
+    translation: 'Allah is the Greatest',
+    particle: ['★','⭐','✦'],
+    color: '#E8A838'
+  },
+  {
+    tab: 'La Ilaha',
+    arabic: 'لَا إِلٰهَ إِلَّا اللّٰه',
+    translit: 'Lā ilāha illallāh',
+    translation: 'There is no god but Allah',
+    particle: ['✦','◆','❋'],
+    color: '#C9A84C'
+  },
+  {
+    tab: 'SubhanAllah',
+    arabic: 'سُبْحَانَ اللّٰه',
+    translit: 'Subḥānallāh',
+    translation: 'Glory be to Allah',
+    particle: ['❋','🌺','✿'],
+    color: '#2ECC71'
+  },
+  {
+    tab: 'Alhamdulillah',
+    arabic: 'الْحَمْدُ لِلّٰه',
+    translit: 'Al-ḥamdulillāh',
+    translation: 'All praise is for Allah',
+    particle: ['✿','🌸','💛'],
+    color: '#F39C12'
+  }
+];
+
+const MILESTONES = [
+  { n: 3,   msg: 'بسم الله — Beginning with Allah ✨' },
+  { n: 7,   msg: '7 — A blessed number! 🌙' },
+  { n: 10,  msg: 'Keep going — لا تتوقف ✦' },
+  { n: 33,  msg: 'سُبْحَانَ اللّٰه — 33 times! 🌿' },
+  { n: 50,  msg: 'Halfway to 100! أكملوا الرحلة 💫' },
+  { n: 99,  msg: '99 — Names of Allah! اللّٰه ❋' },
+  { n: 100, msg: 'الحمد لله — A hundred times! ⭐' },
+  { n: 200, msg: '200! MashaAllah يا عبادة ✦' },
+  { n: 500, msg: 'SubhanAllah! 500 times 🌟' },
+  { n: 1000,msg: 'Thousand Zikr! اللّٰهُ أَكْبَر 🌙' },
+];
+
+/* ─────────── STATE ─────────── */
+let currentZikr = 0;
+let count = 0;
+let total = 0;
+let round = 1;
+let target = 33;
+let soundOn = true;
+let hapticOn = true;
+let streakCount = 0;
+let lastTapTime = 0;
+let tapsLastMinute = [];
+let sessionHistory = [];
+let audioCtx = null;
+let tapTimestamps = [];
+let isDark = true;
+
+const circumference = 2 * Math.PI * 105;
+
+/* ─────────── AUDIO ─────────── */
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playTapSound(isSpecial = false) {
+  if (!soundOn) return;
+  try {
+    const ctx = getAudioCtx();
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+
+    filter.type = 'bandpass';
+    filter.frequency.value = isSpecial ? 880 : 660;
+    filter.Q.value = 2;
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.frequency.setValueAtTime(isSpecial ? 880 : 440, now);
+    osc.frequency.exponentialRampToValueAtTime(isSpecial ? 660 : 330, now + 0.12);
+    osc.type = 'sine';
+
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(isSpecial ? 0.15 : 0.08, now + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + (isSpecial ? 0.4 : 0.2));
+
+    osc.start(now);
+    osc.stop(now + (isSpecial ? 0.4 : 0.2));
+  } catch (e) {}
+}
+
+function playMilestoneSound() {
+  if (!soundOn) return;
+  try {
+    const ctx = getAudioCtx();
+    const notes = [523.25, 659.25, 783.99, 1046.50];
+    notes.forEach((freq, i) => {
+      const now = ctx.currentTime + i * 0.12;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = freq;
+      osc.type = 'sine';
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(0.12, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+      osc.start(now); osc.stop(now + 0.35);
+    });
+  } catch (e) {}
+}
+
+function playCompleteSound() {
+  if (!soundOn) return;
+  try {
+    const ctx = getAudioCtx();
+    const chord = [392, 523.25, 659.25, 784, 1046.50];
+    chord.forEach((freq, i) => {
+      const now = ctx.currentTime + i * 0.06;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = freq;
+      osc.type = 'sine';
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(0.1, now + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+      osc.start(now); osc.stop(now + 1.2);
+    });
+  } catch (e) {}
+}
+
+/* ─────────── HAPTIC ─────────── */
+function haptic(pattern) {
+  if (!hapticOn || !navigator.vibrate) return;
+  navigator.vibrate(pattern);
+}
+
+/* ─────────── BUILD TABS ─────────── */
+const tabContainer = document.getElementById('zikrTabs');
+ZIKRS.forEach((z, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'zikr-tab' + (i === 0 ? ' active' : '');
+  btn.textContent = z.tab;
+  btn.setAttribute('role', 'tab');
+  btn.setAttribute('aria-selected', i === 0);
+  btn.onclick = () => selectZikr(i);
+  tabContainer.appendChild(btn);
+});
+
+/* ─────────── SELECT ZIKR ─────────── */
+function selectZikr(i, animate = true) {
+  currentZikr = i;
+  const display = document.getElementById('zikrDisplay');
+  document.querySelectorAll('.zikr-tab').forEach((b, idx) => {
+    b.classList.toggle('active', idx === i);
+    b.setAttribute('aria-selected', idx === i);
+  });
+  if (animate) {
+    display.classList.add('switching');
+    setTimeout(() => {
+      document.getElementById('zikrArabic').textContent = ZIKRS[i].arabic;
+      document.getElementById('zikrTranslit').textContent = ZIKRS[i].translit;
+      document.getElementById('zikrTranslation').textContent = ZIKRS[i].translation;
+      display.classList.remove('switching');
+    }, 200);
+  } else {
+    document.getElementById('zikrArabic').textContent = ZIKRS[i].arabic;
+    document.getElementById('zikrTranslit').textContent = ZIKRS[i].translit;
+    document.getElementById('zikrTranslation').textContent = ZIKRS[i].translation;
+  }
+}
+
+/* ─────────── SET TARGET ─────────── */
+function setTarget(t, btn) {
+  target = t;
+  document.querySelectorAll('.target-btn').forEach(b => b.classList.remove('active-target'));
+  btn.classList.add('active-target');
+  document.getElementById('targetDisplay').textContent = isFinite(t) ? t : '∞';
+  updateProgress();
+}
+
+/* ─────────── TAP ─────────── */
+function handleTap(clientX, clientY) {
+  const now = Date.now();
+  count++;
+  total++;
+  streakCount++;
+
+  tapTimestamps.push(now);
+  tapTimestamps = tapTimestamps.filter(t => now - t < 60000);
+
+  const timeSinceLastTap = now - lastTapTime;
+  const isFast = timeSinceLastTap < 400 && lastTapTime !== 0;
+  lastTapTime = now;
+
+  const isSpecial = count % 33 === 0;
+  playTapSound(isSpecial || isFast);
+  haptic(isFast ? [15, 10, 15] : isSpecial ? [30, 20, 30] : [15]);
+
+  updateDisplay();
+  orbPulse(isSpecial);
+  spawnParticle(clientX || window.innerWidth / 2, clientY || window.innerHeight * 0.4);
+  checkMilestone();
+  updateStreak();
+  updateTPM();
+
+  // Speed badge
+  const badge = document.getElementById('speedBadge');
+  if (tapTimestamps.length > 0) {
+    const tpm = (tapTimestamps.length / Math.max(1, (now - tapTimestamps[0]) / 60000));
+    if (tpm > 60) {
+      badge.classList.add('show');
+      badge.textContent = Math.round(tpm) + '/m';
+      clearTimeout(badge._hide);
+      badge._hide = setTimeout(() => badge.classList.remove('show'), 1500);
+    }
   }
 
-  body {
-    background: var(--deep);
-    color: var(--text);
-    font-family: 'Amiri', serif;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow: hidden;
-    position: relative;
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
+  if (isFinite(target) && count >= target) {
+    setTimeout(() => showComplete(), 350);
   }
+}
 
-  /* Starfield */
-  .stars {
+/* ─────────── UNDO ─────────── */
+function undoTap() {
+  if (count === 0) return;
+  count--;
+  total = Math.max(0, total - 1);
+  streakCount = Math.max(0, streakCount - 1);
+  updateDisplay();
+  updateStreak();
+  haptic([10]);
+}
+
+/* ─────────── DISPLAY ─────────── */
+function updateDisplay() {
+  const cd = document.getElementById('countDisplay');
+  cd.textContent = count;
+  cd.classList.remove('bump');
+  void cd.offsetWidth;
+  cd.classList.add('bump');
+
+  document.getElementById('totalDisplay').textContent = total;
+  document.getElementById('roundDisplay').textContent = round;
+  updateProgress();
+}
+
+function updateProgress() {
+  const arc = document.getElementById('progressArc');
+  let pct;
+  if (!isFinite(target)) {
+    pct = (count % 33) / 33;
+  } else {
+    pct = Math.min(count / target, 1);
+  }
+  const offset = circumference * (1 - pct);
+  arc.style.strokeDasharray = circumference;
+  arc.style.strokeDashoffset = offset;
+}
+
+function updateTPM() {
+  const tpm = tapTimestamps.length > 1
+    ? Math.round(tapTimestamps.length / ((Date.now() - tapTimestamps[0]) / 60000))
+    : tapTimestamps.length;
+  document.getElementById('tpmDisplay').textContent = Math.min(tpm, 999);
+}
+
+/* ─────────── ORB PULSE ─────────── */
+function orbPulse(special = false) {
+  const orb = document.getElementById('orbBtn');
+  orb.classList.add('tapped');
+  setTimeout(() => {
+    orb.classList.remove('tapped');
+    if (special) {
+      orb.classList.add('flash');
+      setTimeout(() => orb.classList.remove('flash'), 400);
+    }
+  }, 120);
+}
+
+/* ─────────── PARTICLES ─────────── */
+function spawnParticle(x, y) {
+  const z = ZIKRS[currentZikr];
+  const symbols = z.particle;
+  const count = Math.floor(Math.random() * 2) + 1;
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const sym = symbols[Math.floor(Math.random() * symbols.length)];
+    p.textContent = sym;
+    const angle = (Math.random() - 0.5) * 60;
+    const dist = 20 + Math.random() * 30;
+    const size = 0.8 + Math.random() * 0.8;
+    p.style.cssText = `
+      left: ${x + (Math.random() - 0.5) * 40}px;
+      top: ${y - 10}px;
+      font-size: ${size}rem;
+      color: ${z.color};
+      filter: drop-shadow(0 0 6px ${z.color});
+      animation-duration: ${0.8 + Math.random() * 0.5}s;
+      animation-delay: ${i * 0.05}s;
+    `;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 1500);
+  }
+}
+
+function spawnConfetti() {
+  const colors = ['#C9A84C', '#F0D07A', '#8A5FC4', '#4A90D9', '#2ECC71', '#E8A838'];
+  for (let i = 0; i < 60; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti-piece';
+    const size = 6 + Math.random() * 8;
+    c.style.cssText = `
+      left: ${10 + Math.random() * 80}%;
+      top: -20px;
+      width: ${size}px;
+      height: ${size * 0.6}px;
+      background: ${colors[Math.floor(Math.random() * colors.length)]};
+      animation-duration: ${1.5 + Math.random() * 2}s;
+      animation-delay: ${Math.random() * 0.5}s;
+      border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+    `;
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 3500);
+  }
+}
+
+/* ─────────── MILESTONE ─────────── */
+function checkMilestone() {
+  const ms = MILESTONES.find(m => m.n === count);
+  if (ms) {
+    showMilestoneToast(ms.msg);
+    playMilestoneSound();
+    haptic([50, 30, 50, 30, 100]);
+  }
+}
+
+function showMilestoneToast(msg) {
+  const toast = document.getElementById('milestoneToast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => toast.classList.remove('show'), 2800);
+}
+
+/* ─────────── STREAK ─────────── */
+function updateStreak() {
+  document.getElementById('streakVal').textContent =
+    streakCount === 1 ? '1 tap' :
+    streakCount < 10 ? `${streakCount} in a row` :
+    streakCount < 33 ? `🔥 ${streakCount} streak!` :
+    `🌟 ${streakCount} — Amazing!`;
+
+  const dots = document.querySelectorAll('.streak-dot');
+  const lit = Math.min(streakCount, 5);
+  dots.forEach((d, i) => d.classList.toggle('lit', i < lit));
+}
+
+/* ─────────── COMPLETE ─────────── */
+function showComplete() {
+  playCompleteSound();
+  haptic([100, 50, 100, 50, 200, 50, 200]);
+  spawnConfetti();
+
+  // Save to history
+  sessionHistory.unshift({
+    zikr: ZIKRS[currentZikr].arabic,
+    translit: ZIKRS[currentZikr].translit,
+    count: target,
+    rounds: round,
+    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  });
+
+  document.getElementById('completeCount').textContent = target;
+  document.getElementById('completeRound').textContent = round;
+  document.getElementById('completeSub').textContent =
+    `${ZIKRS[currentZikr].translit} — Total today: ${total}`;
+  document.getElementById('completeOverlay').classList.add('show');
+}
+
+function continueZikr() {
+  document.getElementById('completeOverlay').classList.remove('show');
+  count = 0;
+  round++;
+  streakCount = 0;
+  updateDisplay();
+  updateStreak();
+  showMilestoneToast(`✦ Round ${round} started — بارك الله فيك`);
+}
+
+/* ─────────── RESET ─────────── */
+function resetAll() {
+  if (total > 0 && count > 0) {
+    sessionHistory.unshift({
+      zikr: ZIKRS[currentZikr].arabic,
+      translit: ZIKRS[currentZikr].translit,
+      count: total,
+      rounds: round,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    });
+  }
+  count = 0; total = 0; round = 1; streakCount = 0; tapTimestamps = [];
+  document.getElementById('completeOverlay').classList.remove('show');
+  document.getElementById('tpmDisplay').textContent = '0';
+  updateDisplay();
+  updateStreak();
+  haptic([20]);
+}
+
+/* ─────────── NEXT ZIKR ─────────── */
+function nextZikr() {
+  selectZikr((currentZikr + 1) % ZIKRS.length);
+  haptic([15, 10, 15]);
+}
+
+/* ─────────── HISTORY ─────────── */
+function openHistory() {
+  const list = document.getElementById('historyList');
+  if (sessionHistory.length === 0) {
+    list.innerHTML = '<div class="history-empty">No completed sessions yet.<br>Complete a round to see history.</div>';
+  } else {
+    list.innerHTML = sessionHistory.map(h => `
+      <div class="history-item">
+        <div class="history-item-left">
+          <div class="hi-zikr">${h.zikr} <span style="font-size:0.7rem;color:var(--text-dim);">${h.translit}</span></div>
+          <div class="hi-time">${h.time}</div>
+        </div>
+        <div class="history-item-right">
+          <div class="hi-count">${h.count}</div>
+          <div class="hi-rounds">${h.rounds} round${h.rounds > 1 ? 's' : ''}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+  document.getElementById('historyPanel').classList.add('show');
+  document.getElementById('backdrop').classList.add('show');
+  haptic([15]);
+}
+
+function closeHistory() {
+  document.getElementById('historyPanel').classList.remove('show');
+  document.getElementById('backdrop').classList.remove('show');
+}
+
+/* ─────────── THEME ─────────── */
+function toggleTheme() {
+  isDark = !isDark;
+  document.body.setAttribute('data-theme', isDark ? '' : 'light');
+  document.getElementById('themeBtn').textContent = isDark ? '🌙' : '☀️';
+  haptic([10]);
+}
+
+/* ─────────── SOUND ─────────── */
+function toggleSound() {
+  soundOn = !soundOn;
+  const btn = document.getElementById('soundBtn');
+  btn.classList.toggle('muted', !soundOn);
+  btn.title = soundOn ? 'Sound on' : 'Sound off';
+  haptic([10]);
+}
+
+/* ─────────── HAPTIC ─────────── */
+function toggleHaptic() {
+  hapticOn = !hapticOn;
+  const btn = document.getElementById('hapticBtn');
+  btn.style.opacity = hapticOn ? '' : '0.4';
+  btn.title = hapticOn ? 'Haptic on' : 'Haptic off';
+  if (hapticOn) haptic([20, 10, 20]);
+}
+
+/* ─────────── ORB TOUCH/CLICK ─────────── */
+const orbBtn = document.getElementById('orbBtn');
+
+orbBtn.addEventListener('touchstart', function(e) {
+  e.preventDefault();
+  const t = e.touches[0];
+  handleTap(t.clientX, t.clientY);
+}, { passive: false });
+
+orbBtn.addEventListener('click', function(e) {
+  if (e.isTrusted && e.pointerType !== 'touch') {
+    handleTap(e.clientX, e.clientY);
+  }
+});
+
+orbBtn.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    handleTap(window.innerWidth / 2, window.innerHeight * 0.4);
+  }
+});
+
+/* ─────────── SWIPE NEXT ZIKR ─────────── */
+let swipeStartX = 0;
+document.addEventListener('touchstart', e => swipeStartX = e.touches[0].clientX, { passive: true });
+document.addEventListener('touchend', e => {
+  const diff = swipeStartX - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 80 && e.target !== orbBtn) {
+    if (diff > 0) nextZikr();
+    else selectZikr((currentZikr - 1 + ZIKRS.length) % ZIKRS.length);
+  }
+}, { passive: true });
+
+/* ─────────── KEYBOARD ─────────── */
+document.addEventListener('keydown', e => {
+  if (e.key === ' ' || e.key === 'Enter') {
+    if (e.target !== orbBtn) {
+      e.preventDefault();
+      handleTap(window.innerWidth / 2, window.innerHeight * 0.4);
+    }
+  }
+  if (e.key === 'ArrowRight') nextZikr();
+  if (e.key === 'ArrowLeft') selectZikr((currentZikr - 1 + ZIKRS.length) % ZIKRS.length);
+  if (e.key === 'Backspace') undoTap();
+});
+
+/* ─────────── INIT ─────────── */
+selectZikr(0, false);
+updateProgress();
+document.getElementById('progressArc').style.strokeDasharray = circumference;
+document.getElementById('progressArc').style.strokeDashoffset = circumference;
+</script>
+</body>
+ </html>  .stars {
     position: fixed; inset: 0; z-index: 0;
     background:
       radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.6) 0%, transparent 100%),
