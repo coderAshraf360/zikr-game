@@ -1,0 +1,26 @@
+{
+  "name": "Zikr Game — ذكر",
+  "short_name": "Zikr ذكر",
+  "description": "A beautiful Islamic dhikr counter — count your remembrance of Allah",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#080C18",
+  "theme_color": "#C9A84C",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["lifestyle", "utilities"]
+}
